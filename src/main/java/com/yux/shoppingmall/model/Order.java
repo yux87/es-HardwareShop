@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class Order {
 
     @Id
-    @Column(name = "order_id")
+    @Column(name = "order_id", length = 17)
     private String orderId;
 
     @Column(name = "member_id")

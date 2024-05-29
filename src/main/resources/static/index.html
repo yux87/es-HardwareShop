@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Order</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <h1>Create Order</h1>
+    <h2>Available Products</h2>
+    <ul>
+        <li v-for="product in availableProducts" :key="product.productId">
+            {{ product.productName }} - {{ product.price }} - Available: {{ product.quantity }}
+            <input type="number" v-model.number="product.orderQuantity" :max="product.quantity" min="0" :disabled="product.quantity === 0">
+        </li>
+    </ul>
+
+    <h2>Order Summary</h2>
+    <ul>
+        <li v-for="product in orderedProducts" :key="product.productId">
+            {{ product.productName }} - {{ product.orderQuantity }} x {{ product.price }} = {{ product.orderQuantity * product.price }}
+        </li>
+    </ul>
+    <p>Total: {{ orderTotal }}</p>
+
+    <button @click="createOrder">Create Order</button>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            products: []
+        },
+        computed: {
+            availableProducts() {
+                return this.products.filter(product => product.quantity > 0);
+            },
+            orderedProducts() {
+                return this.products.filter(product => product.orderQuantity > 0);
+            },
+            orderTotal() {
+                return this.orderedProducts.reduce((total, product) => total + (product.orderQuantity * product.price), 0);
+            }
+        },
+        created() {
+            this.fetchProducts();
+        },
+        methods: {
+            fetchProducts() {
+                axios.get('/api/products')
+                    .then(response => {
+                        this.products = response.data.map(product => {
+                            product.orderQuantity = 0; // 初始化订单数量
+                            return product;
+                        });
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the products!", error);
+                    });
+            },
+            createOrder() {
+                const orderDetails = this.orderedProducts.map(product => ({
+                    productId: product.productId,
+                    quantity: product.orderQuantity,
+                    standPrice: product.price,
+                    itemPrice: product.orderQuantity * product.price
+                }));
+
+                const orderData = {
+                    memberId: '1', // 假设一个固定的会员ID
+                    orderDetails: orderDetails,
+                    price: this.orderTotal
+                };
+
+                axios.post('/api/orders', orderData)
+                    .then(response => {
+                        alert("Order created successfully!");
+                        this.updateProductQuantities();
+                    })
+                    .catch(error => {
+                        console.error("There was an error creating the order!", error);
+                    });
+            },
+            updateProductQuantities() {
+                this.orderedProducts.forEach(product => {
+                    const updatedQuantity = product.quantity - product.orderQuantity;
+                    axios.patch(`/api/products/${product.productId}`, { quantity: updatedQuantity })
+                        .then(response => {
+                            this.fetchProducts(); // 重新获取产品数据
+                        })
+                        .catch(error => {
+                            console.error("There was an error updating the product quantity!", error);
+                        });
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

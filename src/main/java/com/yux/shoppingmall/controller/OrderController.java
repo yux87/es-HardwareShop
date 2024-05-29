@@ -1,5 +1,6 @@
 package com.yux.shoppingmall.controller;
 
+import com.yux.shoppingmall.dto.OrderData;
 import com.yux.shoppingmall.model.Order;
 import com.yux.shoppingmall.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,13 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order createdOrder = orderService.save(order);
-        return ResponseEntity.ok(createdOrder);
+    public ResponseEntity<Order> createOrder(@RequestBody OrderData orderData) {
+        try {
+            Order createdOrder = orderService.save(orderData.getOrder(), orderData.getMemberId());
+            return ResponseEntity.ok(createdOrder);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }
 

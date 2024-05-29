@@ -20,6 +20,8 @@ public class Order {
     @Column(name = "pay_status")
     private boolean payStatus;
 
+
+
     // Getters and Setters
 
     public String getOrderId() {

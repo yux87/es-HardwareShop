@@ -72,9 +72,11 @@
                 }));
 
                 const orderData = {
-                    memberId: '1', // 假设一个固定的会员ID
-                    orderDetails: orderDetails,
-                    price: this.orderTotal
+                    memberId: 1, // 假设一个固定的会员ID
+                    order: {
+                        orderDetails: orderDetails,
+                        price: this.orderTotal
+                    }
                 };
 
                 axios.post('/api/orders', orderData)

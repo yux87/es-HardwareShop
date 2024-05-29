@@ -1,7 +1,7 @@
 package com.yux.shoppingmall.controller;
 
 import com.yux.shoppingmall.model.Product;
-import com.yux.shoppingmall.repository.ProductRepository;
+import com.yux.shoppingmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +16,11 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable String productId) {
-        Optional<Product> product = productRepository.findByProductId(productId);
+        Optional<Product> product = productService.findByProductId(productId);
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
-

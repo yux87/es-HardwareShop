@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -14,6 +15,13 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+
+    @GetMapping("/by-member/{memberId}")
+    public ResponseEntity<List<Order>> getOrdersByMemberId(@PathVariable int memberId) {
+        List<Order> orders = orderService.findByMemberId(memberId);
+        return ResponseEntity.ok(orders);
+    }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable String orderId) {

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,14 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+
+
+    @Transactional(readOnly = true)
+    public List<Order> findByMemberId(int memberId) {
+        return orderRepository.findByMemberMemberId(memberId);
+    }
+
 
     @Transactional(readOnly = true)
     public Optional<Order> findByOrderId(String orderId) {

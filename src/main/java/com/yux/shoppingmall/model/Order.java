@@ -1,9 +1,6 @@
 package com.yux.shoppingmall.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "[order]")
@@ -13,8 +10,9 @@ public class Order {
     @Column(name = "order_id", length = 17)
     private String orderId;
 
-    @Column(name = "member_id")
-    private String memberId;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "price")
     private int price;
@@ -32,12 +30,12 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public String getMemberId() {
-        return memberId;
+    public Member getMember() {
+        return member;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public void setMember(Member member) {
+        this.member = member;
     }
 
     public int getPrice() {

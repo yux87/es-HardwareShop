@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Orders</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <h1>User Orders</h1>
+  <label for="memberId">Enter Member ID:</label>
+  <input type="number" v-model="memberId" id="memberId">
+  <button @click="fetchOrders">Fetch Orders</button>
+
+  <h2>Orders</h2>
+  <ul>
+    <li v-for="order in orders" :key="order.orderId">
+      Order ID: {{ order.orderId }} - Price: {{ order.price }} - Status: {{ order.payStatus ? 'Paid' : 'Unpaid' }}
+      <button @click="fetchOrderDetails(order.orderId)">View Details</button>
+    </li>
+  </ul>
+
+  <div v-if="selectedOrder">
+    <h2>Order Details for {{ selectedOrder.orderId }}</h2>
+    <p>Member ID: {{ selectedOrder.member.memberId }}</p>
+    <p>Member Name: {{ selectedOrder.member.memberName }}</p>
+    <p>Email: {{ selectedOrder.member.email }}</p>
+    <p>Price: {{ selectedOrder.price }}</p>
+    <p>Status: {{ selectedOrder.payStatus ? 'Paid' : 'Unpaid' }}</p>
+  </div>
+</div>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      memberId: null,
+      orders: [],
+      selectedOrder: null
+    },
+    methods: {
+      fetchOrders() {
+        axios.get(`/api/orders/by-member/${this.memberId}`)
+                .then(response => {
+                  this.orders = response.data;
+                })
+                .catch(error => {
+                  console.error("There was an error fetching the orders!", error);
+                });
+      },
+      fetchOrderDetails(orderId) {
+        this.selectedOrder = this.orders.find(order => order.orderId === orderId);
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -45,7 +45,7 @@ public class OrderService {
         if (memberOpt.isPresent()) {
             order.setMember(memberOpt.get());
             order.setOrderId(generateNextOrderId());
-            System.out.println(generateNextOrderId());
+//            System.out.println(generateNextOrderId());
 //            order.setOrderId("Ms20250805258201");
             return orderRepository.save(order);
         } else {

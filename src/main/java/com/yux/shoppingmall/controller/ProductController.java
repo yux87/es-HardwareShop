@@ -40,4 +40,32 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
+    @PostMapping
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        Product createdProduct = productService.save(product);
+        return ResponseEntity.ok(createdProduct);
+    }
+
+    @PutMapping("/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable String productId, @RequestBody Product productDetails) {
+        Product product = productService.findById(productId);
+        if (product != null) {
+            product.setProductName(productDetails.getProductName());
+            product.setPrice(productDetails.getPrice());
+            product.setQuantity(productDetails.getQuantity());
+            Product updatedProduct = productService.save(product);
+            return ResponseEntity.ok(updatedProduct);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable String productId) {
+        productService.deleteById(productId);
+        return ResponseEntity.noContent().build();
+    }
 }

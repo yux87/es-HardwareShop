@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class WebPageController {
+    @GetMapping("/admin")
+    public String AdminPage() {
+        return "admin";
+    }
     @GetMapping("/order-detail")
     public String OrderDetailPage() {
         return "orderPage";

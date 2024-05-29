@@ -31,5 +31,16 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+
+    @Transactional(readOnly = true)
+    public Product findById(String productId) {
+        return productRepository.findById(productId).orElse(null);
+    }
+
+    @Transactional
+    public void deleteById(String productId) {
+        productRepository.deleteById(productId);
+    }
+
     // 其他业务逻辑方法可以在这里添加，并根据需要使用 @Transactional 注解
 }

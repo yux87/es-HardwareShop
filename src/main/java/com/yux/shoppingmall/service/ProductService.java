@@ -1,5 +1,6 @@
 package com.yux.shoppingmall.service;
 
+import com.yux.shoppingmall.model.Order;
 import com.yux.shoppingmall.model.Product;
 import com.yux.shoppingmall.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class ProductService {
 
     @Transactional
     public Product save(Product product) {
+        product.setProductId(generateNextProductId());
         return productRepository.save(product);
     }
 
@@ -43,4 +45,16 @@ public class ProductService {
     }
 
     // 其他业务逻辑方法可以在这里添加，并根据需要使用 @Transactional 注解
+
+    private String generateNextProductId() {
+        Optional<Product> maxProductOpt = productRepository.findTopByOrderByProductIdDesc();
+        String maxProductId = maxProductOpt.map(Product::getProductId).orElse("P003");
+
+        // Extract the numeric part of the current max product ID
+        int numericPart = Integer.parseInt(maxProductId.substring(1));
+
+        // Generate the new product ID
+        int nextNumericPart = numericPart + 1;
+        return "P" + String.format("%03d", nextNumericPart);
+    }
 }

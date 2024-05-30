@@ -6,33 +6,44 @@
     <title>Admin - Manage Products</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div id="app">
-    <h1>Manage Products</h1>
+<div id="app" class="container mt-5">
+    <nav class="nav">
+        <a class="nav-link" href="/">首頁</a>
+        <a class="nav-link" href="/admin">商品管理</a>
+        <a class="nav-link" href="/login">登入</a>
+        <a class="nav-link" href="/order-detail">訂單</a>
+    </nav>
+    <h1 class="my-4">商品管理</h1>
 
-    <h2>Add New Product</h2>
-    <form @submit.prevent="createProduct">
-        <label for="productId">Product ID:</label>
-        <input type="text" v-model="newProduct.productId" id="productId" required><br>
-        <label for="productName">Product Name:</label>
-        <input type="text" v-model="newProduct.productName" id="productName" required><br>
-        <label for="price">Price:</label>
-        <input type="number" v-model.number="newProduct.price" id="price" required><br>
-        <label for="quantity">Quantity:</label>
-        <input type="number" v-model.number="newProduct.quantity" id="quantity" required><br>
-        <button type="submit">Add Product</button>
+    <h2>新增商品</h2>
+    <form @submit.prevent="createProduct" class="mb-4">
+        <div class="form-group">
+            <label for="productName">商品名稱:</label>
+            <input type="text" v-model="newProduct.productName" id="productName" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="price">價格:</label>
+            <input type="number" v-model.number="newProduct.price" id="price" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="quantity">數量:</label>
+            <input type="number" v-model.number="newProduct.quantity" id="quantity" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
     </form>
 
     <h2>Product List</h2>
-    <table border="1">
+    <table class="table table-bordered">
         <thead>
         <tr>
             <th>Product ID</th>
-            <th>Product Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
+            <th>商品名稱</th>
+            <th>價格</th>
+            <th>數量</th>
+            <th>編輯</th>
         </tr>
         </thead>
         <tbody>
@@ -42,26 +53,34 @@
             <td>{{ product.price }}</td>
             <td>{{ product.quantity }}</td>
             <td>
-                <button @click="editProduct(product)">Edit</button>
-                <button @click="deleteProduct(product.productId)">Delete</button>
+                <button @click="editProduct(product)" class="btn btn-warning btn-sm">Edit</button>
+                <button @click="deleteProduct(product.productId)" class="btn btn-danger btn-sm">Delete</button>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <div v-if="editingProduct">
+    <div v-if="editingProduct" class="mt-4">
         <h2>Edit Product</h2>
         <form @submit.prevent="updateProduct">
-            <label for="editProductId">Product ID:</label>
-            <input type="text" v-model="editingProduct.productId" id="editProductId" readonly><br>
-            <label for="editProductName">Product Name:</label>
-            <input type="text" v-model="editingProduct.productName" id="editProductName" required><br>
-            <label for="editPrice">Price:</label>
-            <input type="number" v-model.number="editingProduct.price" id="editPrice" required><br>
-            <label for="editQuantity">Quantity:</label>
-            <input type="number" v-model.number="editingProduct.quantity" id="editQuantity" required><br>
-            <button type="submit">Update Product</button>
-            <button @click="cancelEdit">Cancel</button>
+            <div class="form-group">
+                <label for="editProductId">Product ID:</label>
+                <input type="text" v-model="editingProduct.productId" id="editProductId" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="editProductName">Product Name:</label>
+                <input type="text" v-model="editingProduct.productName" id="editProductName" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="editPrice">Price:</label>
+                <input type="number" v-model.number="editingProduct.price" id="editPrice" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="editQuantity">Quantity:</label>
+                <input type="number" v-model.number="editingProduct.quantity" id="editQuantity" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Update Product</button>
+            <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
         </form>
     </div>
 </div>
@@ -71,7 +90,6 @@
         el: '#app',
         data: {
             newProduct: {
-                productId: '',
                 productName: '',
                 price: 0,
                 quantity: 0
@@ -96,7 +114,7 @@
                 axios.post('/api/products', this.newProduct)
                     .then(response => {
                         this.products.push(response.data);
-                        this.newProduct = { productId: '', productName: '', price: 0, quantity: 0 };
+                        this.newProduct = { productName: '', price: 0, quantity: 0 };
                     })
                     .catch(error => {
                         console.error("There was an error creating the product!", error);

@@ -4,13 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/index.css">
+
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        header {
+            background: #1E40AF;
+        }
+
+        nav a, .dropdown-content a {
+            color: white;
+        }
+
+        nav a.dropbtn:hover, .dropdown-content a:hover {
+            background-color: #0d6efd;
+        }
+
+        nav a.active {
+            background-color: #4C51BF;
+            border-radius: 0.25rem;
+        }
+    </style>
 </head>
 <body>
-<div id="app">
-    <a href="/hello-page">hello</a>
-    <a href="/admin">admin</a>
+
+<div id="app" class="container mt-3">
+    <div class="mb-3">
+        <form @submit.prevent="fetchProducts" class="form-inline">
+            <input type="text" v-model="searchQuery.search" placeholder="輸入產品名稱搜尋" class="form-control mr-2" />
+            <select v-model="searchQuery.category" class="form-control mr-2">
+                <option value="">所有類別</option>
+                <option value="露營裝備">露營裝備</option>
+                <option value="FOOD">食品</option>
+                <option value="登山裝備">登山裝備</option>
+            </select>
+            <button type="submit" class="btn btn-primary">搜尋</button>
+        </form>
+    </div>
+
+    <h1>商品列表</h1>
+    <div class="row">
+        <div v-for="product in products" :key="product.productId" class="col-md-3 mb-3">
+            <div class="card">
+                <img :src="product.imageUrl" alt="商品圖片" class="card-img-top" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.productName }}</h5>
+                    <p class="card-text">{{ product.price }}</p>
+                    <a :href="`/mall/product?id=${product.productId}`" class="btn btn-primary">查看詳情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h1>Create Order</h1>
     <h2>Available Products</h2>
     <ul>
@@ -35,7 +83,11 @@
     new Vue({
         el: '#app',
         data: {
-            products: []
+            products: [],
+            searchQuery: {
+                search: '',
+                category: ''
+            }
         },
         computed: {
             availableProducts() {
@@ -56,7 +108,7 @@
                 axios.get('/api/products')
                     .then(response => {
                         this.products = response.data.map(product => {
-                            product.orderQuantity = 0; // 初始化订单数量
+                            product.orderQuantity = 0;
                             return product;
                         });
                     })
@@ -73,7 +125,7 @@
                 }));
 
                 const orderData = {
-                    memberId: 1, // 假设一个固定的会员ID
+                    memberId: 1,
                     order: {
                         orderDetails: orderDetails,
                         price: this.orderTotal
@@ -94,7 +146,7 @@
                     const updatedQuantity = product.quantity - product.orderQuantity;
                     axios.patch(`/api/products/${product.productId}`, { quantity: updatedQuantity })
                         .then(response => {
-                            this.fetchProducts(); // 重新获取产品数据
+                            this.fetchProducts();
                         })
                         .catch(error => {
                             console.error("There was an error updating the product quantity!", error);

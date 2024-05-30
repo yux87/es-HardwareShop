@@ -4,38 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
 <body>
-<div id="app">
-    <a href="/hello-page">hello</a>
-    <a href="/admin">admin</a>
-    <h1>Create Order</h1>
+<div id="app" class="container mt-5">
+    <nav class="nav">
+        <a class="nav-link" href="/hello-page">Hello</a>
+        <a class="nav-link" href="/admin">Admin</a>
+    </nav>
+    <h1 class="my-4">Create Order</h1>
+
     <h2>Available Products</h2>
-    <ul>
-        <li v-for="product in availableProducts" :key="product.productId">
-            {{ product.productName }} - {{ product.price }} - Available: {{ product.quantity }}
-            <input type="number" v-model.number="product.orderQuantity" :max="product.quantity" min="0" :disabled="product.quantity === 0">
+    <ul class="list-group mb-4">
+        <li class="list-group-item d-flex justify-content-between align-items-center" v-for="product in availableProducts" :key="product.productId">
+            <div>
+                <h5 class="mb-1">{{ product.productName }}</h5>
+                <small>Price: {{ product.price }} | Available: {{ product.quantity }}</small>
+            </div>
+            <input type="number" class="form-control w-25" v-model.number="product.orderQuantity" :max="product.quantity" min="0" :disabled="product.quantity === 0">
         </li>
     </ul>
 
     <h2>Order Summary</h2>
-    <ul>
-        <li v-for="product in orderedProducts" :key="product.productId">
-            {{ product.productName }} - {{ product.orderQuantity }} x {{ product.price }} = {{ product.orderQuantity * product.price }}
+    <ul class="list-group mb-4">
+        <li class="list-group-item d-flex justify-content-between align-items-center" v-for="product in orderedProducts" :key="product.productId">
+            <div>
+                <h5 class="mb-1">{{ product.productName }}</h5>
+                <small>{{ product.orderQuantity }} x {{ product.price }} = {{ product.orderQuantity * product.price }}</small>
+            </div>
         </li>
     </ul>
-    <p>Total: {{ orderTotal }}</p>
+    <p class="font-weight-bold">Total: {{ orderTotal }}</p>
 
-    <button @click="createOrder">Create Order</button>
+    <button class="btn btn-primary" @click="createOrder">Create Order</button>
 </div>
 
 <script>
     new Vue({
         el: '#app',
         data: {
-            products: []
+            products: [],
+            memberId: null
         },
         computed: {
             availableProducts() {
@@ -56,7 +68,7 @@
                 axios.get('/api/products')
                     .then(response => {
                         this.products = response.data.map(product => {
-                            product.orderQuantity = 0; // 初始化订单数量
+                            product.orderQuantity = 0; // Initialize order quantity
                             return product;
                         });
                     })
@@ -65,6 +77,15 @@
                     });
             },
             createOrder() {
+                if (!this.memberId) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '請先登入',
+                        text: '您需要先登入才能創建訂單。',
+                    });
+                    return;
+                }
+
                 const orderDetails = this.orderedProducts.map(product => ({
                     productId: product.productId,
                     quantity: product.orderQuantity,
@@ -73,7 +94,7 @@
                 }));
 
                 const orderData = {
-                    memberId: 1, // 假设一个固定的会员ID
+                    memberId: this.memberId, // Assuming a fixed member ID
                     order: {
                         orderDetails: orderDetails,
                         price: this.orderTotal
@@ -82,7 +103,10 @@
 
                 axios.post('/api/orders', orderData)
                     .then(response => {
-                        alert("Order created successfully!");
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order created successfully!',
+                        });
                         this.updateProductQuantities();
                     })
                     .catch(error => {
@@ -94,15 +118,29 @@
                     const updatedQuantity = product.quantity - product.orderQuantity;
                     axios.patch(`/api/products/${product.productId}`, { quantity: updatedQuantity })
                         .then(response => {
-                            this.fetchProducts(); // 重新获取产品数据
+                            this.fetchProducts(); // Re-fetch product data
                         })
                         .catch(error => {
                             console.error("There was an error updating the product quantity!", error);
                         });
                 });
-            }
+            },
+            fetchUserProfile() {
+                axios.get('/api/user/current')
+                    .then(response => {
+                        this.memberId = response.data.memberId;
+                        this.fetchOrders();
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the user profile!", error);
+                    });
+            },
+        },
+        mounted() {
+            this.fetchUserProfile();
         }
     });
 </script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

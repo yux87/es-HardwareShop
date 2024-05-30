@@ -10,17 +10,15 @@
 <body>
 <div id="app">
   <h1>User Orders</h1>
-  <label for="memberId">Enter Member ID:</label>
-  <input type="number" v-model="memberId" id="memberId">
-  <button @click="fetchOrders">Fetch Orders</button>
 
   <h2>Orders</h2>
-  <ul>
+  <ul v-if="orders.length > 0">
     <li v-for="order in orders" :key="order.orderId">
       Order ID: {{ order.orderId }} - Price: {{ order.price }} - Status: {{ order.payStatus ? 'Paid' : 'Unpaid' }}
       <button @click="fetchOrderDetails(order.orderId)">View Details</button>
     </li>
   </ul>
+  <p v-else>目前沒有任何訂單</p>
 
   <div v-if="selectedOrder">
     <h2>Order Details for {{ selectedOrder.orderId }}</h2>
@@ -36,11 +34,20 @@
   new Vue({
     el: '#app',
     data: {
-      memberId: null,
       orders: [],
       selectedOrder: null
     },
     methods: {
+      fetchUserProfile() {
+        axios.get('/api/user/current')
+                .then(response => {
+                  this.memberId = response.data.memberId;
+                  this.fetchOrders();
+                })
+                .catch(error => {
+                  console.error("There was an error fetching the user profile!", error);
+                });
+      },
       fetchOrders() {
         axios.get(`/api/orders/by-member/${this.memberId}`)
                 .then(response => {
@@ -53,6 +60,9 @@
       fetchOrderDetails(orderId) {
         this.selectedOrder = this.orders.find(order => order.orderId === orderId);
       }
+    },
+    mounted() {
+      this.fetchUserProfile();
     }
   });
 </script>

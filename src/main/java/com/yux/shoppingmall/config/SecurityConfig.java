@@ -29,10 +29,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
 //                        .requestMatchers("/api/auth/**", "/login").permitAll()
-//                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("/*","/index.html","/login/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/orders/**", "/api/products")
-                        .permitAll()
+                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/*","/index.html","/login/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/api/orders/**", "/api/products")
+//                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

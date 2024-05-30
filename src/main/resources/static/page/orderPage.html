@@ -4,29 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Orders</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-<div id="app">
-  <h1>User Orders</h1>
+<div id="app" class="container mt-5">
+  <nav class="nav">
+    <a class="nav-link" href="/">首頁</a>
+    <a class="nav-link" href="/order-detail">訂單</a>
+    <a class="nav-link" v-if="!memberId" href="/login">登入</a>
+    <div v-else>
+      <a class="nav-link" href="#">{{ memberName }}</a>
+      <a class="nav-link" href="/logout">登出</a>
+    </div>
+    <a class="nav-link" v-if="memberId ==1" href="/admin">商品管理</a>
+  </nav>
+  <h1 class="text-center mb-4">使用者訂單</h1>
 
-  <h2>Orders</h2>
-  <ul v-if="orders.length > 0">
-    <li v-for="order in orders" :key="order.orderId">
-      Order ID: {{ order.orderId }} - Price: {{ order.price }} - Status: {{ order.payStatus ? 'Paid' : 'Unpaid' }}
-      <button @click="fetchOrderDetails(order.orderId)">View Details</button>
+  <h2>訂單</h2>
+  <ul class="list-group mb-4" v-if="orders.length > 0">
+    <li class="list-group-item d-flex justify-content-between align-items-center" v-for="order in orders" :key="order.orderId">
+      <div>
+        Order ID: {{ order.orderId }} - Price: {{ order.price }} - Status: <span :class="order.payStatus ? 'badge badge-success' : 'badge badge-warning'">{{ order.payStatus ? 'Paid' : 'Unpaid' }}</span>
+      </div>
+      <button class="btn btn-primary btn-sm" @click="fetchOrderDetails(order.orderId)">View Details</button>
     </li>
   </ul>
-  <p v-else>目前沒有任何訂單</p>
+  <p v-else class="alert alert-info">目前沒有任何訂單</p>
 
-  <div v-if="selectedOrder">
-    <h2>Order Details for {{ selectedOrder.orderId }}</h2>
-    <p>Member ID: {{ selectedOrder.member.memberId }}</p>
-    <p>Member Name: {{ selectedOrder.member.memberName }}</p>
-    <p>Email: {{ selectedOrder.member.email }}</p>
-    <p>Price: {{ selectedOrder.price }}</p>
-    <p>Status: {{ selectedOrder.payStatus ? 'Paid' : 'Unpaid' }}</p>
+  <div v-if="selectedOrder" class="card">
+    <div class="card-header">
+      Order Details for {{ selectedOrder.orderId }}
+    </div>
+    <div class="card-body">
+      <p><strong>Member ID:</strong> {{ selectedOrder.member.memberId }}</p>
+      <p><strong>Member Name:</strong> {{ selectedOrder.member.memberName }}</p>
+      <p><strong>Email:</strong> {{ selectedOrder.member.email }}</p>
+      <p><strong>Price:</strong> {{ selectedOrder.price }}</p>
+      <p><strong>Status:</strong> <span :class="selectedOrder.payStatus ? 'badge badge-success' : 'badge badge-warning'">{{ selectedOrder.payStatus ? 'Paid' : 'Unpaid' }}</span></p>
+    </div>
   </div>
 </div>
 
@@ -35,13 +52,16 @@
     el: '#app',
     data: {
       orders: [],
-      selectedOrder: null
+      selectedOrder: null,
+      memberId: null,
+      memberName:''
     },
     methods: {
       fetchUserProfile() {
         axios.get('/api/user/current')
                 .then(response => {
                   this.memberId = response.data.memberId;
+                  this.memberName = response.data.memberName;
                   this.fetchOrders();
                 })
                 .catch(error => {
@@ -66,5 +86,6 @@
     }
   });
 </script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

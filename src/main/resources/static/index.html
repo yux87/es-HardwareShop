@@ -13,13 +13,17 @@
 <div id="app" class="container mt-5">
     <nav class="nav">
         <a class="nav-link" href="/">首頁</a>
-        <a class="nav-link" href="/admin">商品管理</a>
-        <a class="nav-link" href="/login">登入</a>
         <a class="nav-link" href="/order-detail">訂單</a>
+        <a class="nav-link" v-if="!memberId" href="/login">登入</a>
+        <div v-else>
+            <a class="nav-link" href="#">{{ memberName }}</a>
+            <a class="nav-link" href="/logout">登出</a>
+        </div>
+        <a class="nav-link" v-if="memberId ==1" href="/admin">商品管理</a>
     </nav>
     <h1 class="my-4">玉山五金</h1>
 
-    <h2>Available Products</h2>
+    <h2>上架商品</h2>
     <ul class="list-group mb-4">
         <li class="list-group-item d-flex justify-content-between align-items-center" v-for="product in availableProducts" :key="product.productId">
             <div>
@@ -30,7 +34,7 @@
         </li>
     </ul>
 
-    <h2>Order Summary</h2>
+    <h2>訂單計算</h2>
     <ul class="list-group mb-4">
         <li class="list-group-item d-flex justify-content-between align-items-center" v-for="product in orderedProducts" :key="product.productId">
             <div>
@@ -49,7 +53,8 @@
         el: '#app',
         data: {
             products: [],
-            memberId: null
+            memberId: null,
+            memberName: ''
         },
         computed: {
             availableProducts() {
@@ -96,7 +101,7 @@
                 }));
 
                 const orderData = {
-                    memberId: this.memberId, // Assuming a fixed member ID
+                    memberId: this.memberId,
                     order: {
                         orderDetails: orderDetails,
                         price: this.orderTotal
@@ -131,7 +136,7 @@
                 axios.get('/api/user/current')
                     .then(response => {
                         this.memberId = response.data.memberId;
-                        this.fetchOrders();
+                        this.memberName = response.data.memberName;
                     })
                     .catch(error => {
                         console.error("There was an error fetching the user profile!", error);
@@ -143,6 +148,6 @@
         }
     });
 </script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

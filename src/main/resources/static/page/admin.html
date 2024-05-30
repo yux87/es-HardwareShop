@@ -12,9 +12,13 @@
 <div id="app" class="container mt-5">
     <nav class="nav">
         <a class="nav-link" href="/">首頁</a>
-        <a class="nav-link" href="/admin">商品管理</a>
-        <a class="nav-link" href="/login">登入</a>
         <a class="nav-link" href="/order-detail">訂單</a>
+        <a class="nav-link" v-if="!memberId" href="/login">登入</a>
+        <div v-else>
+            <a class="nav-link" href="#">{{ memberName }}</a>
+            <a class="nav-link" href="/logout">登出</a>
+        </div>
+        <a class="nav-link" v-if="memberId ==1" href="/admin">商品管理</a>
     </nav>
     <h1 class="my-4">商品管理</h1>
 
@@ -35,7 +39,7 @@
         <button type="submit" class="btn btn-primary">Add Product</button>
     </form>
 
-    <h2>Product List</h2>
+    <h2>商品列表</h2>
     <table class="table table-bordered">
         <thead>
         <tr>
@@ -95,7 +99,9 @@
                 quantity: 0
             },
             products: [],
-            editingProduct: null
+            editingProduct: null,
+            memberId: null,
+            memberName:''
         },
         created() {
             this.fetchProducts();
@@ -145,7 +151,20 @@
             },
             cancelEdit() {
                 this.editingProduct = null;
-            }
+            },
+            fetchUserProfile() {
+                axios.get('/api/user/current')
+                    .then(response => {
+                        this.memberId = response.data.memberId;
+                        this.memberName = response.data.memberName;
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the user profile!", error);
+                    });
+            },
+        },
+        mounted() {
+            this.fetchUserProfile();
         }
     });
 </script>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      width: 300px;
+    }
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+    .login-container label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .login-container button:hover {
+      background-color: #218838;
+    }
+    .autofill-buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+    .autofill-buttons button {
+      width: 48%;
+      background-color: #007bff;
+      margin-bottom: 0;
+    }
+    .autofill-buttons button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="login-container">
+  <h2>Login</h2>
+
+  <form action="/login" method="post">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit">Login</button>
+  </form>
+  <div class="autofill-buttons">
+    <button type="button" onclick="autofill('admin', '123456')">Admin</button>
+    <button type="button" onclick="autofill('user1', '123456')">User1</button>
+    <button type="button" onclick="autofill('user2', '123456')">User2</button>
+  </div>
+</div>
+
+<script>
+  function autofill(username, password) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+  }
+</script>
+</body>
+</html>

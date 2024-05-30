@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 );
         // 添加 CSP 過濾器
-//        http.addFilterBefore(cspFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(cspFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

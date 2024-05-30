@@ -3,13 +3,18 @@ package com.yux.shoppingmall.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "member")
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private int memberId;
+
+    @Column(name = "username", unique = true)
+    private String username;
+
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "member_name")
     private String memberName;
@@ -25,6 +30,22 @@ public class Member {
 
     public void setMemberId(int memberId) {
         this.memberId = memberId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getMemberName() {
@@ -43,4 +64,3 @@ public class Member {
         this.email = email;
     }
 }
-
